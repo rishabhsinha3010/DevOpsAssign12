@@ -1,6 +1,6 @@
 # DevOps Assignment - Django PostgreSQL Application
 
-**Author:** ITA737  
+**Author:** ITA768  
 **Course:** DevOps Assignment  
 **Components:** Terraform + Ansible + Docker Swarm + Django + PostgreSQL + CI/CD
 
@@ -193,7 +193,7 @@ docker service scale myapp_web=3
 
 ## 👨‍💻 Author
 
-**ITA737** - DevOps Assignment Submission
+**ITA768** - DevOps Assignment Submission
 
 ---
 
