@@ -75,9 +75,9 @@ Devopsassignment/
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/mdmitkar/Devopsassignment.git
+   git clone https://github.com/rishabhsinha3010/Devopsassignment.git
    cd Devopsassignment
-   git checkout ITA737
+   git checkout ITA768
    ```
 
 2. **Install dependencies:**
