@@ -1,0 +1,50 @@
+---
+- name: Deploy Django app to Swarm
+  hosts: swarm_manager
+  become: yes
+  tasks:
+    - name: Copy docker-compose.yml to manager
+      copy:
+        src: ../docker/docker-compose.yml
+        dest: /home/ubuntu/docker-compose/docker-compose.yml
+        owner: ubuntu
+        group: ubuntu
+
+    - name: Copy Dockerfiles to manager
+      copy:
+        src: ../docker/
+        dest: /home/ubuntu/docker-compose/
+        owner: ubuntu
+        group: ubuntu
+
+    - name: Copy Django app to manager
+      copy:
+        src: ../
+        dest: /home/ubuntu/docker-compose/
+        owner: ubuntu
+        group: ubuntu
+
+    - name: Build web image
+      command: docker build -t myapp-web:latest -f docker/Dockerfile.web .
+      args:
+        chdir: /home/ubuntu/docker-compose
+      become_user: ubuntu
+
+    - name: Deploy stack to swarm
+      command: docker stack deploy -c docker-compose.yml myapp
+      args:
+        chdir: /home/ubuntu/docker-compose
+      become_user: ubuntu
+
+    - name: Wait for services to be ready
+      pause:
+        seconds: 30
+
+    - name: Check stack status
+      command: docker stack ps myapp
+      become_user: ubuntu
+      register: stack_status
+
+    - name: Display stack status
+      debug:
+        msg: "{{ stack_status.stdout_lines }}"

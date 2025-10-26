@@ -1,0 +1,21 @@
+---
+- name: Complete DevOps Assignment Deployment
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install Docker and dependencies
+      include: install-docker.yml
+
+- name: Setup Docker Swarm
+  hosts: swarm_manager:swarm_workers
+  become: yes
+  tasks:
+    - name: Setup Swarm cluster
+      include: setup-swarm.yml
+
+- name: Deploy Application
+  hosts: swarm_manager
+  become: yes
+  tasks:
+    - name: Deploy Django app
+      include: deploy-app.yml

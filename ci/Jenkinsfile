@@ -1,0 +1,99 @@
+pipeline {
+    agent any
+    
+    environment {
+        AWS_REGION = 'us-east-1'
+        DOCKER_IMAGE_WEB = 'myapp-web'
+        DOCKER_IMAGE_DB = 'myapp-db'
+        STACK_NAME = 'myapp'
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+                echo 'Code checked out successfully'
+            }
+        }
+        
+        stage('Test') {
+            parallel {
+                stage('Django Tests') {
+                    steps {
+                        sh '''
+                            python -m pip install --upgrade pip
+                            pip install -r requirements.txt
+                            python manage.py test
+                        '''
+                    }
+                }
+                
+                stage('Selenium Tests') {
+                    steps {
+                        sh '''
+                            pip install selenium webdriver-manager
+                            python selenium/test_app.py
+                        '''
+                    }
+                }
+            }
+        }
+        
+        stage('Build Docker Images') {
+            steps {
+                sh '''
+                    docker build -t ${DOCKER_IMAGE_WEB}:latest -f docker/Dockerfile.web .
+                    docker build -t ${DOCKER_IMAGE_DB}:latest -f docker/Dockerfile.db .
+                '''
+            }
+        }
+        
+        stage('Test Docker Swarm Locally') {
+            steps {
+                sh '''
+                    docker swarm init --advertise-addr 127.0.0.1 || true
+                    docker stack deploy -c docker/docker-compose.yml ${STACK_NAME}
+                    sleep 30
+                    docker stack ps ${STACK_NAME}
+                    docker stack rm ${STACK_NAME}
+                '''
+            }
+        }
+        
+        stage('Deploy to AWS') {
+            when {
+                branch 'ITA737'
+            }
+            steps {
+                script {
+                    // This would run when AWS instances are ready
+                    echo 'AWS deployment would run here:'
+                    echo '1. Run Terraform to provision infrastructure'
+                    echo '2. Run Ansible playbooks to configure servers'
+                    echo '3. Deploy Docker Swarm stack'
+                    
+                    // Uncomment when ready:
+                    // sh 'cd terraform && terraform init && terraform apply -auto-approve'
+                    // sh 'cd ansible && ansible-playbook -i inventory.ini playbook.yml'
+                }
+            }
+        }
+    }
+    
+    post {
+        always {
+            sh 'docker system prune -f || true'
+            cleanWs()
+        }
+        
+        success {
+            echo 'Pipeline completed successfully! 🎉'
+            // Send notification to team
+        }
+        
+        failure {
+            echo 'Pipeline failed! ❌'
+            // Send failure notification
+        }
+    }
+}
