@@ -134,7 +134,7 @@ python selenium/test_app.py
 ### Django App
 - **Database:** PostgreSQL with `login` table
 - **Authentication:** Custom login system
-- **Users:** ITA737 / 2022PE0000 (example)
+- **Users:** ITA768 / 2022PE0000 (example)
 
 ### Docker Swarm
 - **Web Replicas:** 2
@@ -166,7 +166,7 @@ docker service scale myapp_web=3
 
 ### Access Application
 - **URL:** http://[SwarmManagerIP]:8000
-- **Test User:** ITA737 / 2022PE0000
+- **Test User:** ITA768 / 2022PE0000
 
 ## 🐛 Troubleshooting
 
